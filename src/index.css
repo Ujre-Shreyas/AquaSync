@@ -39,31 +39,73 @@ html, body, #root {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Light / Dark Mode root defaults */
+/* Light / Dark Mode root defaults with Stitch Botanical Frost system */
 :root {
-  --bg-app: #f8fafc;
-  --bg-surface: rgba(255, 255, 255, 0.85);
+  --bg-app: #faf8ff;
+  --bg-background: #faf8ff;
+  --bg-surface: #faf8ff;
+  --bg-surface-container: #eaedff;
+  --bg-surface-container-low: #f2f3ff;
+  --bg-surface-container-lowest: #ffffff;
+  --bg-surface-container-high: #e2e7ff;
+  --bg-surface-container-highest: #dae2fd;
   --bg-card: rgba(255, 255, 255, 0.95);
-  --border-app: rgba(16, 185, 129, 0.22);
-  --border-card: rgba(203, 213, 225, 0.8);
-  --text-main: #0f172a;
-  --text-muted: #64748b;
+  --border-app: rgba(0, 108, 73, 0.15);
+  --border-card: rgba(187, 202, 191, 0.4);
+  --border-outline: #6c7a71;
+  --border-outline-variant: #bbcabf;
+  --text-main: #131b2e;
+  --text-on-surface: #131b2e;
+  --text-on-surface-variant: #3c4a42;
+  --text-muted: #6c7a71;
   --text-sub: #475569;
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --sidebar-bg: #f1f5f9;
+  --glass-bg: rgba(250, 248, 255, 0.82);
+  --sidebar-bg: #f2f3ff;
+
+  --color-primary-val: #006c49;
+  --color-primary-container-val: #10b981;
+  --color-primary-fixed-val: #6ffbbe;
+  --color-primary-fixed-dim-val: #4edea3;
+  --color-on-primary-val: #ffffff;
+  --color-on-primary-container-val: #00422b;
+  --color-secondary-val: #006398;
+  --color-secondary-container-val: #5bb8fe;
+  --color-tertiary-val: #bc0b3b;
+  --color-tertiary-container-val: #ff7886;
 }
 
 html.dark, :root.dark {
   --bg-app: #0e141b;
-  --bg-surface: #141d27;
-  --bg-card: rgba(20, 29, 39, 0.85);
+  --bg-background: #0e141b;
+  --bg-surface: #121a24;
+  --bg-surface-container: #162230;
+  --bg-surface-container-low: #101822;
+  --bg-surface-container-lowest: #141f2c;
+  --bg-surface-container-high: #1a293a;
+  --bg-surface-container-highest: #22354a;
+  --bg-card: rgba(20, 29, 39, 0.88);
   --border-app: rgba(16, 185, 129, 0.2);
   --border-card: rgba(16, 185, 129, 0.16);
+  --border-outline: #475569;
+  --border-outline-variant: #334155;
   --text-main: #f1f5f9;
+  --text-on-surface: #f1f5f9;
+  --text-on-surface-variant: #94a3b8;
   --text-muted: #94a3b8;
   --text-sub: #cbd5e1;
-  --glass-bg: rgba(20, 29, 39, 0.72);
+  --glass-bg: rgba(14, 20, 27, 0.85);
   --sidebar-bg: #0b1016;
+
+  --color-primary-val: #10b981;
+  --color-primary-container-val: #10b981;
+  --color-primary-fixed-val: #6ffbbe;
+  --color-primary-fixed-dim-val: #4edea3;
+  --color-on-primary-val: #ffffff;
+  --color-on-primary-container-val: #00422b;
+  --color-secondary-val: #0284c7;
+  --color-secondary-container-val: #38bdf8;
+  --color-tertiary-val: #f43f5e;
+  --color-tertiary-container-val: #fb7185;
 }
 
 body {
@@ -396,4 +438,158 @@ input[type='range']::-webkit-slider-thumb:hover {
   .bento-grid {
     gap: 1.5rem;
   }
+}
+
+/* ── Stitch Botanical Frost Utility Classes ────────────────────────────────── */
+.bg-background { background-color: var(--bg-background); }
+.bg-surface { background-color: var(--bg-surface); }
+.bg-surface-container { background-color: var(--bg-surface-container); }
+.bg-surface-container-low { background-color: var(--bg-surface-container-low); }
+.bg-surface-container-lowest { background-color: var(--bg-surface-container-lowest); }
+.bg-surface-container-high { background-color: var(--bg-surface-container-high); }
+.bg-surface-container-highest { background-color: var(--bg-surface-container-highest); }
+
+.text-on-surface { color: var(--text-on-surface); }
+.text-on-surface-variant { color: var(--text-on-surface-variant); }
+.text-outline { color: var(--border-outline); }
+.text-outline-variant { color: var(--border-outline-variant); }
+
+.border-outline-variant { border-color: var(--border-outline-variant); }
+.border-outline { border-color: var(--border-outline); }
+.border-primary-container { border-color: var(--color-primary-container-val); }
+
+.bg-primary { background-color: var(--color-primary-val); }
+.text-primary { color: var(--color-primary-val); }
+.text-on-primary { color: var(--color-on-primary-val); }
+
+.bg-primary-container { background-color: var(--color-primary-container-val); }
+.text-primary-container { color: var(--color-primary-container-val); }
+.text-on-primary-container { color: var(--color-on-primary-container-val); }
+
+.bg-primary-fixed { background-color: var(--color-primary-fixed-val); }
+.bg-primary-fixed-dim { background-color: var(--color-primary-fixed-dim-val); }
+
+.bg-secondary { background-color: var(--color-secondary-val); }
+.text-secondary { color: var(--color-secondary-val); }
+.bg-secondary-container { background-color: var(--color-secondary-container-val); }
+.text-secondary-container { color: var(--color-secondary-container-val); }
+
+.bg-tertiary { background-color: var(--color-tertiary-val); }
+.text-tertiary { color: var(--color-tertiary-val); }
+.text-on-tertiary { color: #ffffff; }
+.bg-tertiary-container { background-color: var(--color-tertiary-container-val); }
+.text-tertiary-container { color: var(--color-tertiary-container-val); }
+
+/* Typography helper classes */
+.font-headline-lg { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px; line-height: 40px; letter-spacing: -0.025em; font-weight: 800; }
+.font-headline-md { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; line-height: 28px; letter-spacing: -0.02em; font-weight: 700; }
+.font-headline-sm { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; line-height: 24px; letter-spacing: -0.015em; font-weight: 600; }
+.font-stat-lg { font-family: 'JetBrains Mono', monospace; font-size: 30px; line-height: 34px; letter-spacing: -0.03em; font-weight: 700; }
+.font-stat-lg-mobile { font-family: 'JetBrains Mono', monospace; font-size: 24px; line-height: 30px; letter-spacing: -0.02em; font-weight: 700; }
+.font-mono-metric { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 18px; letter-spacing: 0em; font-weight: 500; }
+.font-label-sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 16px; letter-spacing: 0.02em; font-weight: 500; }
+.font-label-caps { font-family: 'Inter', sans-serif; font-size: 11px; line-height: 14px; letter-spacing: 0.06em; font-weight: 700; text-transform: uppercase; }
+.font-body-bold { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 20px; letter-spacing: -0.01em; font-weight: 600; }
+.font-body-base { font-family: 'Inter', sans-serif; font-size: 14px; line-height: 20px; letter-spacing: -0.01em; font-weight: 400; }
+.font-body-lg { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 24px; letter-spacing: -0.01em; font-weight: 400; }
+
+/* Spacing tokens matching Stitch */
+.px-margin-desktop { padding-left: 1.25rem; padding-right: 1.25rem; }
+.p-margin-desktop { padding: 1.25rem; }
+.gap-space-xs { gap: 0.25rem; }
+.gap-space-sm { gap: 0.5rem; }
+.gap-space-md { gap: 0.75rem; }
+.gap-space-lg { gap: 1rem; }
+.gap-space-xl { gap: 1.5rem; }
+.p-space-xs { padding: 0.25rem; }
+.p-space-sm { padding: 0.5rem; }
+.p-space-md { padding: 0.75rem; }
+.p-space-lg { padding: 1rem; }
+.py-space-lg { padding-top: 1rem; padding-bottom: 1rem; }
+.mb-space-sm { margin-bottom: 0.5rem; }
+.mb-space-md { margin-bottom: 0.75rem; }
+.mb-space-lg { margin-bottom: 1rem; }
+.pb-space-md { padding-bottom: 0.75rem; }
+.pb-space-lg { padding-bottom: 1rem; }
+
+/* ── 2D Plant SVG Animations (Swaying & Wilting) ───────────────────────────── */
+@keyframes gentleBreeze {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+@keyframes leafSwayLeft {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-3.5deg); }
+}
+
+@keyframes leafSwayRight {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes pulseDrop {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.9; }
+  50% { transform: translateY(-4px) scale(1.08); opacity: 1; }
+}
+
+@keyframes wiltingDroop {
+  0%, 100% { transform: rotate(5deg) translateY(4px); }
+  50% { transform: rotate(7.5deg) translateY(6px); }
+}
+
+.stem-anim {
+  transform-origin: 120px 200px;
+  animation: gentleBreeze 4.8s ease-in-out infinite;
+  transition: all 0.6s ease;
+}
+
+.leaf-left {
+  transform-origin: 120px 145px;
+  animation: leafSwayLeft 4.2s ease-in-out infinite;
+  transition: all 0.6s ease;
+}
+
+.leaf-right {
+  transform-origin: 120px 125px;
+  animation: leafSwayRight 5.1s ease-in-out infinite;
+  transition: all 0.6s ease;
+}
+
+.leaf-top {
+  transform-origin: 120px 90px;
+  animation: gentleBreeze 3.8s ease-in-out infinite alternate;
+  transition: all 0.6s ease;
+}
+
+.water-glow {
+  animation: pulseDrop 3s ease-in-out infinite;
+}
+
+/* Wilting State modifications */
+.is-wilting .stem-anim {
+  animation: wiltingDroop 5s ease-in-out infinite !important;
+  filter: saturate(0.6) brightness(0.88);
+}
+
+.is-wilting .leaf-left {
+  animation: none !important;
+  transform: rotate(6.5deg) translateY(5px);
+  filter: saturate(0.6);
+}
+
+.is-wilting .leaf-right {
+  animation: none !important;
+  transform: rotate(8.5deg) translateY(6px);
+  filter: saturate(0.6);
+}
+
+.is-wilting .leaf-top {
+  animation: none !important;
+  transform: rotate(4deg) translateY(3px);
+  filter: saturate(0.6);
+}
+
+.is-wilting .water-glow {
+  opacity: 0.15;
 }

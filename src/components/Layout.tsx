@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Sidebar from './Sidebar'
+import BotanicalHeader from './BotanicalHeader'
 import SplashScreenModal from './SplashScreenModal'
 import MakeItRainOverlay from './MakeItRainOverlay'
 import DemoControlDrawer from './DemoControlDrawer'
@@ -10,18 +10,18 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-main)] transition-colors duration-300">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-background text-on-surface transition-colors duration-300">
       {/* ── Initial Splash Screen Modal ── */}
       <SplashScreenModal />
 
       {/* ── 5-Second Make it Rain Animation Overlay ── */}
       <MakeItRainOverlay />
 
-      {/* ── Persistent Sidebar Navigation ── */}
-      <Sidebar />
+      {/* ── Botanical Frost Fixed Top Navigation Header ── */}
+      <BotanicalHeader />
 
-      {/* ── Main Viewport Content ── */}
-      <main className="flex-1 min-w-0 h-screen overflow-hidden relative flex flex-col">
+      {/* ── Main Viewport Content (Strict 100vh Responsive Layout) ── */}
+      <main className="flex-1 w-full h-[calc(100vh-4rem)] mt-16 overflow-y-auto relative flex flex-col no-scrollbar">
         {children}
       </main>
 

@@ -48,6 +48,10 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/overview" element={<Dashboard />} />
+        <Route path="/irrigation" element={<Dashboard />} />
+        <Route path="/telemetry" element={<Dashboard />} />
+        <Route path="/diagnostics" element={<Dashboard />} />
         <Route path="/calibration" element={<Calibration />} />
         <Route path="/compiled-data" element={<CompiledData />} />
         <Route path="*" element={<Navigate to="/" replace />} />

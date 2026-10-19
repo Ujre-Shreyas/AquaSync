@@ -121,10 +121,19 @@ export interface AquaSyncState {
   addRainEvent: (event: RainEvent) => void
   updateRainEvent: (id: string, update: Partial<RainEvent>) => void
 
-  // Manual Override: "Make it Rain"
+  // Active Tab Navigation
+  activeTab: 'plant-overview' | 'irrigation-pump' | 'telemetry-charts' | 'diagnostics-sd' | 'calibration'
+  setActiveTab: (tab: 'plant-overview' | 'irrigation-pump' | 'telemetry-charts' | 'diagnostics-sd' | 'calibration') => void
+
+  // Manual Override: "Make it Rain" & Dynamic Pulses
   makeItRainActive: boolean
   makeItRainCountdown: number
   triggerMakeItRain: () => Promise<void>
+  manualPulseDuration: number
+  setManualPulseDuration: (sec: number) => void
+  manualPulseActive: boolean
+  manualPulseCountdown: number
+  triggerManualPulse: (seconds?: number) => Promise<void>
 
   // Compiled Data History (for Recharts)
   soilHistory: HistoryDataPoint[]
@@ -678,6 +687,71 @@ export const useAquaStore = create<AquaSyncState>()(
             }))
           } else {
             set({ makeItRainCountdown: currentCount - 1 })
+          }
+        }, 1000)
+
+        set({ _makeItRainTimer: timer })
+      },
+
+      // ── Active Tab State ─────────────────────────────────────────────────────
+      activeTab: 'plant-overview',
+      setActiveTab: (tab) => set({ activeTab: tab }),
+
+      // ── Dynamic Manual Pulses (2s, 4s, 6s) ───────────────────────────────────
+      manualPulseDuration: 4,
+      setManualPulseDuration: (sec) => set({ manualPulseDuration: sec }),
+      manualPulseActive: false,
+      manualPulseCountdown: 0,
+      triggerManualPulse: async (seconds?: number) => {
+        const state = get()
+        if (state.manualPulseActive) return
+        const duration = seconds ?? state.manualPulseDuration
+
+        if (state._makeItRainTimer) {
+          clearInterval(state._makeItRainTimer)
+        }
+
+        const prevFlow = state.sensors.flow_speed
+        const prevPump = state.sensors.pump_active
+
+        set({
+          manualPulseActive: true,
+          manualPulseCountdown: duration,
+          sensors: {
+            ...state.sensors,
+            flow_speed: 2.4,
+            pump_active: true,
+          },
+        })
+
+        // Send GET request to http://192.168.1.101/manual_pump?sec=X
+        try {
+          fetch(`${ESP32_BASE_URL}/manual_pump?sec=${duration}`, {
+            method: 'GET',
+            signal: AbortSignal.timeout(3000),
+          }).catch((err) => {
+            console.warn('[AquaSync] Manual pulse hardware fetch offline (simulating):', err)
+          })
+        } catch (err) {
+          console.warn('[AquaSync] Manual pump dispatch error:', err)
+        }
+
+        const timer = setInterval(() => {
+          const currentCount = get().manualPulseCountdown
+          if (currentCount <= 1) {
+            clearInterval(timer)
+            set((s) => ({
+              manualPulseActive: false,
+              manualPulseCountdown: 0,
+              _makeItRainTimer: null,
+              sensors: {
+                ...s.sensors,
+                flow_speed: prevFlow,
+                pump_active: prevPump,
+              },
+            }))
+          } else {
+            set({ manualPulseCountdown: currentCount - 1 })
           }
         }, 1000)
 
