@@ -9,14 +9,17 @@ import Calibration from './pages/Calibration'
 import CompiledData from './pages/CompiledData'
 
 export default function App() {
-  const { theme, sensors, weather } = useAquaStore()
+  const { theme, themeVariant, sensors, weather } = useAquaStore()
 
-  // On mount: ensure dark mode class is applied, fetch weather + AQI, start rain watcher
+  // On mount: ensure dark mode class and theme variant are applied, fetch weather + AQI, start rain watcher
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
+    }
+    if (themeVariant) {
+      document.documentElement.setAttribute('data-theme', themeVariant)
     }
     fetchWeatherAndAqi()
     startRainWatcher()
@@ -30,6 +33,13 @@ export default function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [theme])
+
+  // Sync themeVariant changes
+  useEffect(() => {
+    if (themeVariant) {
+      document.documentElement.setAttribute('data-theme', themeVariant)
+    }
+  }, [themeVariant])
 
   // Recompute PWM whenever relevant sensor or weather parameters change
   useEffect(() => {

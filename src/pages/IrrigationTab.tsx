@@ -11,6 +11,8 @@ export const IrrigationTab: React.FC = () => {
     manualPulseActive,
     manualPulseCountdown,
     triggerManualPulse,
+    emergencyHalt,
+    triggerChirpTest,
   } = useAquaStore()
 
   const [emergencyHalted, setEmergencyHalted] = useState(false)
@@ -27,18 +29,17 @@ export const IrrigationTab: React.FC = () => {
     await triggerManualPulse(sec)
   }
 
-  const handleEmergencyHalt = () => {
+  // Bind Emergency Halt: instantly POSTs http://192.168.1.101/set_flow?pwm=0 and clears active timers in Zustand
+  const handleEmergencyHalt = async () => {
     setEmergencyHalted(true)
-    // Dispatch 0-second pulse / stop to hardware
-    fetch('http://192.168.1.101/manual_pump?sec=0', {
-      method: 'GET',
-      signal: AbortSignal.timeout(2000),
-    }).catch(() => {})
+    await emergencyHalt()
   }
 
-  const handleChirpTest = () => {
+  // Bind 1s Chirp Test: sends GET to http://192.168.1.101/manual_pump?sec=1
+  const handleChirpTest = async () => {
     setChirping(true)
-    setTimeout(() => setChirping(false), 1200)
+    await triggerChirpTest()
+    setTimeout(() => setChirping(false), 1000)
   }
 
   return (

@@ -5,6 +5,7 @@ import { persist, subscribeWithSelector } from 'zustand/middleware'
 
 export type AppMode = 'LIVE' | 'DEMO'
 export type ThemeMode = 'dark' | 'light'
+export type ThemeVariant = 'frost' | 'minimal' | 'midnight'
 
 export interface SensorData {
   soil_moisture: number   // 0-4095 (ADC raw)
@@ -69,6 +70,8 @@ export interface AquaSyncState {
   // Theme
   theme: ThemeMode
   toggleTheme: () => void
+  themeVariant: ThemeVariant
+  setThemeVariant: (v: ThemeVariant) => void
 
   // Splash Screen Modal
   splashModalOpen: boolean
@@ -134,6 +137,10 @@ export interface AquaSyncState {
   manualPulseActive: boolean
   manualPulseCountdown: number
   triggerManualPulse: (seconds?: number) => Promise<void>
+
+  // Emergency Halt & 1s Chirp Test
+  emergencyHalt: () => Promise<void>
+  triggerChirpTest: () => Promise<void>
 
   // Compiled Data History (for Recharts)
   soilHistory: HistoryDataPoint[]
@@ -207,47 +214,6 @@ function getStoredCalibrationData(): { calibration: CalibrationSettings; history
   return { calibration: defaultCalibration, history: [] }
 }
 
-// Generate 24 seed historical data points for realistic charts on load
-function generateSeedHistory(): HistoryDataPoint[] {
-  const points: HistoryDataPoint[] = []
-  const now = Date.now()
-  const interval = 30 * 60 * 1000 // 30-minute steps (12 hours)
-
-  let soil = 2200
-  let temp = 26.5
-  let hum = 58
-  let light = 3100
-
-  for (let i = 24; i >= 0; i--) {
-    const t = new Date(now - i * interval)
-    const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    soil += (Math.random() - 0.48) * 85
-    soil = Math.max(1200, Math.min(3800, soil))
-    temp += (Math.random() - 0.5) * 0.8
-    hum += (Math.random() - 0.5) * 1.5
-    light += (Math.random() - 0.45) * 120
-    light = Math.max(300, Math.min(4050, light))
-
-    const soil_percent = Math.round(((4095 - soil) / (4095 - 1200)) * 100)
-    const light_percent = Math.round((light / 4095) * 100)
-    const flow = i % 6 === 0 ? 1.8 + Math.random() * 0.6 : 0.0
-
-    points.push({
-      time: timeStr,
-      timestamp: t.getTime(),
-      soil_moisture: Math.round(soil),
-      soil_percent: Math.max(5, Math.min(98, soil_percent)),
-      temperature: Number(temp.toFixed(1)),
-      humidity: Math.round(hum),
-      flow_speed: Number(flow.toFixed(2)),
-      pwm: flow > 0 ? 185 : 95,
-      rain_raw: i === 4 || i === 5 ? 2400 : 4050,
-      light_raw: Math.round(light),
-      light_percent,
-    })
-  }
-  return points
-}
 
 // Initial calibration data retrieved from localStorage
 const initialCalData = getStoredCalibrationData()
@@ -280,6 +246,15 @@ export const useAquaStore = create<AquaSyncState>()(
           } else {
             document.documentElement.classList.remove('dark')
           }
+        }
+      },
+
+      // Theme variants: Frost, Minimal, Midnight
+      themeVariant: 'frost',
+      setThemeVariant: (v) => {
+        set({ themeVariant: v })
+        if (typeof document !== 'undefined') {
+          document.documentElement.setAttribute('data-theme', v)
         }
       },
 
@@ -355,8 +330,8 @@ export const useAquaStore = create<AquaSyncState>()(
       makeItRainCountdown: 5,
       _makeItRainTimer: null,
 
-      // Compiled Data History
-      soilHistory: generateSeedHistory(),
+      // Compiled Data History - starts empty so curves only populate as real telemetry is ingested
+      soilHistory: [],
 
       // Calibration & History (Persisted in localStorage)
       calibration: initialCalData.calibration,
@@ -758,6 +733,55 @@ export const useAquaStore = create<AquaSyncState>()(
         set({ _makeItRainTimer: timer })
       },
 
+      // ── Emergency Halt ───────────────────────────────────────────────────────
+      // Instantly clears any active manual timers in Zustand state and posts http://192.168.1.101/set_flow?pwm=0
+      emergencyHalt: async () => {
+        const { _makeItRainTimer } = get()
+        if (_makeItRainTimer) {
+          clearInterval(_makeItRainTimer)
+        }
+
+        set((state) => ({
+          manualPulseActive: false,
+          manualPulseCountdown: 0,
+          makeItRainActive: false,
+          makeItRainCountdown: 0,
+          _makeItRainTimer: null,
+          target_pwm: 0,
+          sensors: {
+            ...state.sensors,
+            pump_active: false,
+            flow_speed: 0.0,
+          },
+        }))
+
+        try {
+          await fetch(`${ESP32_BASE_URL}/set_flow?pwm=0`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pwm: 0 }),
+            signal: AbortSignal.timeout(3000),
+          })
+          console.log('[AquaSync] Emergency halt POST /set_flow?pwm=0 dispatched')
+        } catch (err) {
+          console.warn('[AquaSync] Emergency halt offline:', err)
+        }
+      },
+
+      // ── 1s Chirp Test ────────────────────────────────────────────────────────
+      // Sends GET request to http://192.168.1.101/manual_pump?sec=1
+      triggerChirpTest: async () => {
+        try {
+          await fetch(`${ESP32_BASE_URL}/manual_pump?sec=1`, {
+            method: 'GET',
+            signal: AbortSignal.timeout(2000),
+          })
+          console.log('[AquaSync] 1s Chirp GET /manual_pump?sec=1 dispatched')
+        } catch (err) {
+          console.warn('[AquaSync] Chirp test hardware offline (simulating):', err)
+        }
+      },
+
       // ── Add history point for Recharts ───────────────────────────────────────
       addHistoryPoint: (point) =>
         set((state) => ({
@@ -771,18 +795,24 @@ export const useAquaStore = create<AquaSyncState>()(
         calibration: state.calibration,
         calibrationHistory: state.calibrationHistory,
         theme: state.theme,
+        themeVariant: state.themeVariant,
       }),
       // On initial load, automatically apply the most recent thresholds from the local storage history array
       onRehydrateStorage: () => (state) => {
-        if (state && state.calibrationHistory && state.calibrationHistory.length > 0) {
-          const latest = state.calibrationHistory[0]
-          state.setCalibration({
-            soilDryAdc: Number(latest.soilDryAdc),
-            soilWetAdc: Number(latest.soilWetAdc),
-            rainThreshold: Number(latest.rainThreshold),
-            pumpPwmOffset: Number(latest.pumpPwmOffset),
-          })
-          console.log('[AquaSync] Rehydrated and applied latest calibration from localStorage:', latest)
+        if (state) {
+          if (state.themeVariant && typeof document !== 'undefined') {
+            document.documentElement.setAttribute('data-theme', state.themeVariant)
+          }
+          if (state.calibrationHistory && state.calibrationHistory.length > 0) {
+            const latest = state.calibrationHistory[0]
+            state.setCalibration({
+              soilDryAdc: Number(latest.soilDryAdc),
+              soilWetAdc: Number(latest.soilWetAdc),
+              rainThreshold: Number(latest.rainThreshold),
+              pumpPwmOffset: Number(latest.pumpPwmOffset),
+            })
+            console.log('[AquaSync] Rehydrated and applied latest calibration from localStorage:', latest)
+          }
         }
       },
     }

@@ -1,6 +1,17 @@
 import React, { useState } from 'react'
 import { useAquaStore } from '../store/useAquaStore'
 import BotanicalPlantSvg from '../components/BotanicalPlantSvg'
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts'
 
 export const PlantOverviewTab: React.FC = () => {
   const {
@@ -10,6 +21,9 @@ export const PlantOverviewTab: React.FC = () => {
     manualPulseActive,
     manualPulseCountdown,
     setActiveTab,
+    soilHistory,
+    themeVariant,
+    setThemeVariant,
   } = useAquaStore()
 
   const [selectedVariety, setSelectedVariety] = useState('Kalanchoe Blossfeldiana')
@@ -32,65 +46,54 @@ export const PlantOverviewTab: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col gap-space-lg max-w-[1720px] mx-auto pb-12 select-none animate-fadeIn">
-      {/* ── Top Sub-Header & Variety Selector ── */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md p-space-md bg-surface-container-lowest/80 backdrop-blur-xl rounded-2xl shadow-sm border border-outline-variant/15">
-        <div className="flex flex-col gap-space-xs w-full lg:w-auto">
-          <div className="flex items-center gap-space-xs flex-wrap">
-            <div className="flex items-center gap-1.5 px-space-sm py-1 rounded-xl bg-primary-container/15 text-primary">
-              <span className="material-symbols-outlined text-[16px]">psychiatry</span>
-              <span className="font-label-caps text-label-caps uppercase tracking-wider text-on-primary-container">
-                Profile Select
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1 overflow-x-auto py-0.5 no-scrollbar">
-              {[
-                { name: 'Kalanchoe Blossfeldiana', icon: '🌱' },
-                { name: 'Ficus Microcarpa', icon: '🌿' },
-                { name: 'Monstera Deliciosa', icon: '🪴' },
-                { name: 'Aloe Vera', icon: '🌵' },
-              ].map((variety) => (
-                <button
-                  key={variety.name}
-                  type="button"
-                  onClick={() => setSelectedVariety(variety.name)}
-                  className={`px-space-md py-1.5 rounded-xl font-body-base text-body-base flex items-center gap-1.5 shrink-0 transition-all ${
-                    selectedVariety === variety.name
-                      ? 'bg-primary text-on-primary font-body-bold shadow-sm shadow-primary/20 scale-[1.02]'
-                      : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
-                  }`}
-                >
-                  <span className="text-xs">{variety.icon}</span>
-                  <span>{variety.name}</span>
-                  {selectedVariety === variety.name && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary-fixed ml-0.5" />
-                  )}
-                </button>
-              ))}
-            </div>
+      {/* ── Top Sub-Header & Variety Selector (UI Alignment Fix) ── */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-space-md p-space-md bg-surface-container-lowest/80 backdrop-blur-xl rounded-2xl shadow-sm border border-outline-variant/15">
+        {/* Left Side: Profile select badge & Plant species pills center-aligned on Y-axis */}
+        <div className="flex flex-col lg:flex-row items-center gap-space-md w-full lg:w-auto">
+          <div className="flex items-center gap-1.5 px-space-sm py-1.5 rounded-xl bg-primary-container/15 text-primary shrink-0">
+            <span className="material-symbols-outlined text-[18px]">psychiatry</span>
+            <span className="font-label-caps text-label-caps uppercase tracking-wider text-on-primary-container font-bold">
+              Profile Select
+            </span>
           </div>
 
-          <div className="flex items-center gap-space-xs flex-wrap pt-0.5">
-            <span className="font-body-bold text-body-bold text-on-surface flex items-center gap-1">
-              Selected:{' '}
-              <span className="text-primary font-headline-sm text-headline-sm">
-                {selectedVariety}
-              </span>{' '}
-              <span className="font-body-base text-body-base text-on-surface-variant font-normal">
-                (Flaming Katy)
-              </span>
-            </span>
-            <span className="px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface-variant font-label-sub text-label-sub font-mono">
-              Succulent / Crassulaceae
-            </span>
-            <span className="px-2 py-0.5 rounded-md bg-secondary-container/20 text-secondary font-label-sub text-label-sub font-mono">
-              Short-Day Blooming Cycle
+          {/* Plant Species Pills: Center-aligned on Y-axis */}
+          <div className="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar shrink-0">
+            {[
+              { name: 'Kalanchoe Blossfeldiana', icon: '🌱' },
+              { name: 'Ficus Microcarpa', icon: '🌿' },
+              { name: 'Monstera Deliciosa', icon: '🪴' },
+              { name: 'Aloe Vera', icon: '🌵' },
+            ].map((variety) => (
+              <button
+                key={variety.name}
+                type="button"
+                onClick={() => setSelectedVariety(variety.name)}
+                className={`px-space-md py-1.5 rounded-xl font-body-base text-body-base flex items-center gap-1.5 shrink-0 transition-all cursor-pointer ${
+                  selectedVariety === variety.name
+                    ? 'bg-primary text-on-primary font-body-bold shadow-sm shadow-primary/20 scale-[1.02]'
+                    : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                <span className="text-xs">{variety.icon}</span>
+                <span>{variety.name}</span>
+                {selectedVariety === variety.name && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-fixed ml-0.5" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden xl:flex items-center gap-space-xs text-body-base text-on-surface-variant">
+            <span className="text-outline">|</span>
+            <span className="font-label-sub text-label-sub font-mono px-2 py-0.5 rounded bg-surface-container">
+              Crassulaceae Succulent
             </span>
           </div>
         </div>
 
-        {/* Live Stream Status Chips */}
-        <div className="flex items-center gap-space-xs flex-wrap self-end lg:self-auto shrink-0">
+        {/* Right Side: ESP32 Live Stream Status & Dynamic Theme Switcher Buttons (Center-aligned on Y-axis) */}
+        <div className="flex items-center gap-space-sm flex-wrap justify-end shrink-0">
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-surface-container-low text-on-surface font-label-sub text-label-sub font-mono shadow-xs border border-outline-variant/20">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75" />
@@ -98,21 +101,49 @@ export const PlantOverviewTab: React.FC = () => {
             </span>
             <span>ESP32 Live Stream</span>
             <span className="text-outline">|</span>
-            <span className="text-primary">2.0s</span>
+            <span className="text-primary font-bold">2.0s</span>
             <span className="text-outline">|</span>
             <span className="text-on-surface-variant">WiFi -62 dBm</span>
           </div>
 
+          {/* Theme Switcher: Wired to Frost, Minimal, and Midnight root CSS variables */}
           <div className="flex items-center gap-1 p-1 bg-surface-container-low rounded-xl border border-outline-variant/20">
-            <span className="px-2 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sub text-label-sub font-semibold shadow-xs">
+            <button
+              type="button"
+              onClick={() => setThemeVariant('frost')}
+              className={`px-2.5 py-1 rounded-lg font-label-sub text-label-sub font-semibold transition-all cursor-pointer ${
+                themeVariant === 'frost'
+                  ? 'bg-surface-container-lowest text-primary shadow-xs ring-1 ring-black/5 dark:ring-white/10'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60'
+              }`}
+              title="Activate Botanical Frost Theme"
+            >
               Frost
-            </span>
-            <span className="px-2 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sub text-label-sub cursor-pointer transition-colors">
+            </button>
+            <button
+              type="button"
+              onClick={() => setThemeVariant('minimal')}
+              className={`px-2.5 py-1 rounded-lg font-label-sub text-label-sub font-semibold transition-all cursor-pointer ${
+                themeVariant === 'minimal'
+                  ? 'bg-surface-container-lowest text-primary shadow-xs ring-1 ring-black/5 dark:ring-white/10'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60'
+              }`}
+              title="Activate Stark Minimal Monochrome Theme"
+            >
               Minimal
-            </span>
-            <span className="px-2 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sub text-label-sub cursor-pointer transition-colors">
+            </button>
+            <button
+              type="button"
+              onClick={() => setThemeVariant('midnight')}
+              className={`px-2.5 py-1 rounded-lg font-label-sub text-label-sub font-semibold transition-all cursor-pointer ${
+                themeVariant === 'midnight'
+                  ? 'bg-surface-container-lowest text-primary shadow-xs ring-1 ring-black/5 dark:ring-white/10'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60'
+              }`}
+              title="Activate Deep OLED Midnight Cyber Theme"
+            >
               Midnight
-            </span>
+            </button>
           </div>
         </div>
       </div>
@@ -433,21 +464,24 @@ export const PlantOverviewTab: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Telemetry Charts Grid (Simplified High-Precision 2-Column Split) ── */}
+      {/* ── Live Chart Rendering (Mapped directly to Zustand soilHistory) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
-        {/* Chart 1: Soil Moisture Dynamics (7-Day Soak & Dry Cycle) */}
+        {/* Chart 1: Real-time Soil Moisture Dynamics (Recharts) */}
         <div className="bg-surface-container-lowest/80 backdrop-blur-xl rounded-2xl p-space-lg shadow-sm flex flex-col justify-between border border-outline-variant/15">
           <div className="flex items-center justify-between mb-space-sm">
             <div className="flex flex-col">
-              <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                Soil Moisture Dynamics
+              <span className="font-headline-sm text-headline-sm text-on-surface font-bold flex items-center gap-2">
+                <span>Soil Moisture Dynamics</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-primary-container/15 text-primary border border-primary-container/30">
+                  Live ESP32
+                </span>
               </span>
               <span className="font-label-sub text-label-sub text-on-surface-variant font-mono">
-                7-Day Soak & Dry Cycle (Succulent Gritty Substrate)
+                Real-time capacitive saturation curve & irrigation events
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-1 rounded-md bg-primary-container/20 text-on-primary-container font-label-sub text-label-sub font-mono">
+              <span className="px-2 py-1 rounded-md bg-primary-container/20 text-on-primary-container font-label-sub text-label-sub font-mono font-bold">
                 {soilPercent}% Active
               </span>
               <span className="px-2 py-1 rounded-md bg-surface-container-high text-on-surface-variant font-label-sub text-label-sub font-mono">
@@ -456,115 +490,67 @@ export const PlantOverviewTab: React.FC = () => {
             </div>
           </div>
 
-          {/* SVG Line Chart: Evaporation curves with pulse peaks */}
+          {/* Live Recharts Area Component mapped to Zustand soilHistory */}
           <div className="w-full h-56 pt-2">
-            <svg
-              className="w-full h-full overflow-visible"
-              preserveAspectRatio="none"
-              viewBox="0 0 600 200"
-            >
-              <line
-                className="text-surface-container-high"
-                stroke="currentColor"
-                strokeDasharray="4 4"
-                strokeWidth="1"
-                x1="0"
-                x2="600"
-                y1="40"
-                y2="40"
-              />
-              <line
-                className="text-surface-container-high"
-                stroke="currentColor"
-                strokeDasharray="4 4"
-                strokeWidth="1"
-                x1="0"
-                x2="600"
-                y1="90"
-                y2="90"
-              />
-              <line
-                className="text-primary-container/40"
-                stroke="currentColor"
-                strokeDasharray="2 2"
-                strokeWidth="1"
-                x1="0"
-                x2="600"
-                y1="140"
-                y2="140"
-              />
-              <line
-                className="text-surface-container-high"
-                stroke="currentColor"
-                strokeWidth="1"
-                x1="0"
-                x2="600"
-                y1="180"
-                y2="180"
-              />
-
-              {/* Optimal Band (30% to 50%) */}
-              <rect
-                className="text-primary-container/10"
-                fill="currentColor"
-                height="60"
-                width="600"
-                x="0"
-                y="80"
-              />
-
-              <defs>
-                <linearGradient id="moistureGradStitch" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
-
-              <path
-                d="M 0 160 L 40 150 L 50 60 Q 100 75, 180 115 T 310 155 L 320 70 Q 380 90, 480 125 L 600 138"
-                fill="none"
-                stroke="#006c49"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.5"
-              />
-
-              <path
-                d="M 0 160 L 40 150 L 50 60 Q 100 75, 180 115 T 310 155 L 320 70 Q 380 90, 480 125 L 600 138 L 600 190 L 0 190 Z"
-                fill="url(#moistureGradStitch)"
-              />
-
-              <circle cx="50" cy="60" r="4.5" fill="#006c49" stroke="#ffffff" strokeWidth="2" />
-              <circle cx="320" cy="70" r="4.5" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-              <circle
-                className="animate-pulse"
-                cx="600"
-                cy="138"
-                r="5"
-                fill="#10b981"
-                stroke="#ffffff"
-                strokeWidth="2"
-              />
-            </svg>
+            {soilHistory && soilHistory.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={soilHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="moistureLiveGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#94a3b8" opacity={0.15} vertical={false} />
+                  <XAxis dataKey="time" stroke="#94a3b8" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
+                  <YAxis domain={[0, 100]} stroke="#94a3b8" tick={{ fontSize: 11, fontFamily: 'monospace' }} unit="%" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(20, 29, 39, 0.95)',
+                      borderColor: '#10b981',
+                      borderRadius: '12px',
+                      color: '#f8fafc',
+                      fontFamily: 'monospace',
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="soil_percent"
+                    stroke="#10b981"
+                    strokeWidth={2.5}
+                    fillOpacity={1}
+                    fill="url(#moistureLiveGrad)"
+                    name="Soil Saturation"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center rounded-xl bg-surface-container-low/40 border border-dashed border-outline-variant/30 text-on-surface-variant font-mono text-label-sub gap-2">
+                <span className="material-symbols-outlined text-primary text-[24px] animate-pulse">sync</span>
+                <span>Awaiting live ESP32 telemetry ingestion (2.0s polling)...</span>
+                <span className="text-[10px] text-outline">Curves populate dynamically as real sensor frames arrive</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between pt-space-xs font-label-sub text-label-sub text-on-surface-variant font-mono">
-            <span>7 Days Ago</span>
-            <span>5 Days Ago (Pulse #1)</span>
-            <span>2 Days Ago (80mL Pulse)</span>
-            <span className="text-primary font-bold">Today: {soilPercent}% (Equilibrated)</span>
+            <span>Live Telemetry Window: {soilHistory.length} frames</span>
+            <span className="text-primary font-bold">Current: {soilPercent}% Saturation</span>
           </div>
         </div>
 
-        {/* Chart 2: Ambient Temperature & Relative Humidity (24h Correlation) */}
+        {/* Chart 2: Real-time Ambient Micro-Climate (Recharts) */}
         <div className="bg-surface-container-lowest/80 backdrop-blur-xl rounded-2xl p-space-lg shadow-sm flex flex-col justify-between border border-outline-variant/15">
           <div className="flex items-center justify-between mb-space-sm">
             <div className="flex flex-col">
-              <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
-                Ambient Micro-Climate
+              <span className="font-headline-sm text-headline-sm text-on-surface font-bold flex items-center gap-2">
+                <span>Ambient Micro-Climate</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary-container/15 text-secondary border border-secondary-container/30">
+                  DHT11
+                </span>
               </span>
               <span className="font-label-sub text-label-sub text-on-surface-variant font-mono">
-                24h Correlation: DHT11 Temp (°C) vs Rel. Humidity (%)
+                Live Temperature (°C) vs Relative Humidity (%)
               </span>
             </div>
             <div className="flex items-center gap-3 font-label-sub text-label-sub font-mono">
@@ -577,71 +563,54 @@ export const PlantOverviewTab: React.FC = () => {
             </div>
           </div>
 
+          {/* Live Recharts Line Component mapped to Zustand soilHistory */}
           <div className="w-full h-56 pt-2">
-            <svg
-              className="w-full h-full overflow-visible"
-              preserveAspectRatio="none"
-              viewBox="0 0 600 200"
-            >
-              <line
-                className="text-surface-container-high"
-                stroke="currentColor"
-                strokeDasharray="4 4"
-                strokeWidth="1"
-                x1="0"
-                x2="600"
-                y1="40"
-                y2="40"
-              />
-              <line
-                className="text-surface-container-high"
-                stroke="currentColor"
-                strokeDasharray="4 4"
-                strokeWidth="1"
-                x1="0"
-                x2="600"
-                y1="100"
-                y2="100"
-              />
-              <line
-                className="text-surface-container-high"
-                stroke="currentColor"
-                strokeDasharray="4 4"
-                strokeWidth="1"
-                x1="0"
-                x2="600"
-                y1="160"
-                y2="160"
-              />
-
-              <path
-                d="M 0 130 C 100 135, 180 120, 260 70 C 320 40, 400 45, 480 85 C 540 115, 580 100, 600 95"
-                fill="none"
-                stroke="#006c49"
-                strokeLinecap="round"
-                strokeWidth="2.5"
-              />
-
-              <path
-                d="M 0 75 C 100 68, 180 85, 260 140 C 320 165, 400 155, 480 115 C 540 95, 580 105, 600 110"
-                fill="none"
-                stroke="#5bb8fe"
-                strokeDasharray="3 3"
-                strokeLinecap="round"
-                strokeWidth="2.5"
-              />
-
-              <circle cx="600" cy="95" r="4.5" fill="#006c49" stroke="#ffffff" strokeWidth="2" />
-              <circle cx="600" cy="110" r="4.5" fill="#5bb8fe" stroke="#ffffff" strokeWidth="2" />
-            </svg>
+            {soilHistory && soilHistory.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={soilHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#94a3b8" opacity={0.15} vertical={false} />
+                  <XAxis dataKey="time" stroke="#94a3b8" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
+                  <YAxis stroke="#94a3b8" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(20, 29, 39, 0.95)',
+                      borderColor: '#0284c7',
+                      borderRadius: '12px',
+                      color: '#f8fafc',
+                      fontFamily: 'monospace',
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="temperature"
+                    stroke="#10b981"
+                    strokeWidth={2.5}
+                    dot={false}
+                    name="Temp (°C)"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="humidity"
+                    stroke="#38bdf8"
+                    strokeWidth={2}
+                    strokeDasharray="4 2"
+                    dot={false}
+                    name="Humidity (%)"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center rounded-xl bg-surface-container-low/40 border border-dashed border-outline-variant/30 text-on-surface-variant font-mono text-label-sub gap-2">
+                <span className="material-symbols-outlined text-secondary text-[24px] animate-pulse">thermostat</span>
+                <span>Awaiting live DHT11 telemetry ingestion...</span>
+                <span className="text-[10px] text-outline">Real-time thermal and humidity curves populate automatically</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between pt-space-xs font-label-sub text-label-sub text-on-surface-variant font-mono">
-            <span>00:00 (Night Phase)</span>
-            <span>06:00 (Dawn)</span>
-            <span>12:00 (Peak Light)</span>
-            <span>18:00 (Dark Induction)</span>
-            <span className="text-on-surface font-semibold">23:59 (Current)</span>
+            <span>DHT11 Atmosphere Stream</span>
+            <span className="text-on-surface font-semibold">Active Sampling</span>
           </div>
         </div>
       </div>

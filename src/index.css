@@ -40,7 +40,7 @@ html, body, #root {
 }
 
 /* Light / Dark Mode root defaults with Stitch Botanical Frost system */
-:root {
+:root, [data-theme="frost"] {
   --bg-app: #faf8ff;
   --bg-background: #faf8ff;
   --bg-surface: #faf8ff;
@@ -74,7 +74,7 @@ html, body, #root {
   --color-tertiary-container-val: #ff7886;
 }
 
-html.dark, :root.dark {
+html.dark, :root.dark, html.dark[data-theme="frost"], :root.dark[data-theme="frost"] {
   --bg-app: #0e141b;
   --bg-background: #0e141b;
   --bg-surface: #121a24;
@@ -104,6 +104,92 @@ html.dark, :root.dark {
   --color-on-primary-container-val: #00422b;
   --color-secondary-val: #0284c7;
   --color-secondary-container-val: #38bdf8;
+  --color-tertiary-val: #f43f5e;
+  --color-tertiary-container-val: #fb7185;
+}
+
+/* ── Minimal Theme: Clean Stark Monochrome with Crisp Accents ── */
+[data-theme="minimal"]:not(.dark) {
+  --bg-app: #f8fafc;
+  --bg-background: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-container: #f1f5f9;
+  --bg-surface-container-low: #f8fafc;
+  --bg-surface-container-lowest: #ffffff;
+  --bg-surface-container-high: #e2e8f0;
+  --bg-surface-container-highest: #cbd5e1;
+  --bg-card: #ffffff;
+  --border-app: #e2e8f0;
+  --border-card: #cbd5e1;
+  --border-outline: #64748b;
+  --border-outline-variant: #cbd5e1;
+  --text-main: #0f172a;
+  --text-on-surface: #0f172a;
+  --text-on-surface-variant: #475569;
+  --text-muted: #64748b;
+  --text-sub: #334155;
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --color-primary-val: #059669;
+  --color-primary-container-val: #10b981;
+  --color-secondary-val: #0284c7;
+  --color-secondary-container-val: #38bdf8;
+  --color-tertiary-val: #e11d48;
+  --color-tertiary-container-val: #fb7185;
+}
+
+html.dark[data-theme="minimal"], :root.dark[data-theme="minimal"] {
+  --bg-app: #090d16;
+  --bg-background: #090d16;
+  --bg-surface: #0f172a;
+  --bg-surface-container: #1e293b;
+  --bg-surface-container-low: #0f172a;
+  --bg-surface-container-lowest: #1e293b;
+  --bg-surface-container-high: #334155;
+  --bg-surface-container-highest: #475569;
+  --bg-card: rgba(15, 23, 42, 0.95);
+  --border-app: rgba(255, 255, 255, 0.12);
+  --border-card: rgba(255, 255, 255, 0.1);
+  --border-outline: #64748b;
+  --border-outline-variant: #334155;
+  --text-main: #f8fafc;
+  --text-on-surface: #f8fafc;
+  --text-on-surface-variant: #94a3b8;
+  --text-muted: #94a3b8;
+  --text-sub: #cbd5e1;
+  --glass-bg: rgba(15, 23, 42, 0.9);
+  --color-primary-val: #10b981;
+  --color-primary-container-val: #34d399;
+  --color-secondary-val: #38bdf8;
+  --color-secondary-container-val: #0284c7;
+  --color-tertiary-val: #fb7185;
+  --color-tertiary-container-val: #f43f5e;
+}
+
+/* ── Midnight Theme: Deep OLED Pitch Black with Neon Emerald & Cyan Glow ── */
+[data-theme="midnight"], html.dark[data-theme="midnight"], :root.dark[data-theme="midnight"] {
+  --bg-app: #030712;
+  --bg-background: #030712;
+  --bg-surface: #0b0f19;
+  --bg-surface-container: #111827;
+  --bg-surface-container-low: #080d1a;
+  --bg-surface-container-lowest: #0e1526;
+  --bg-surface-container-high: #1f2937;
+  --bg-surface-container-highest: #374151;
+  --bg-card: rgba(11, 15, 25, 0.92);
+  --border-app: rgba(52, 211, 153, 0.35);
+  --border-card: rgba(52, 211, 153, 0.25);
+  --border-outline: #4b5563;
+  --border-outline-variant: #1f2937;
+  --text-main: #f9fafb;
+  --text-on-surface: #f9fafb;
+  --text-on-surface-variant: #9ca3af;
+  --text-muted: #9ca3af;
+  --text-sub: #d1d5db;
+  --glass-bg: rgba(3, 7, 18, 0.92);
+  --color-primary-val: #34d399;
+  --color-primary-container-val: #10b981;
+  --color-secondary-val: #38bdf8;
+  --color-secondary-container-val: #0ea5e9;
   --color-tertiary-val: #f43f5e;
   --color-tertiary-container-val: #fb7185;
 }

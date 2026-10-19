@@ -11,8 +11,8 @@ export const BotanicalHeader: React.FC<BotanicalHeaderProps> = () => {
     setActiveTab,
     mode,
     setMode,
-    theme,
-    toggleTheme,
+    themeVariant,
+    setThemeVariant,
     esp32Connected,
     toggleDemoPanel,
     makeItRainActive,
@@ -133,19 +133,23 @@ export const BotanicalHeader: React.FC<BotanicalHeaderProps> = () => {
             <span className="font-bold">{mode}</span>
           </button>
 
-          {/* Theme Selector (Botanical Frost) */}
+          {/* Theme Selector (Frost, Minimal, Midnight) */}
           <button
             type="button"
-            onClick={toggleTheme}
+            onClick={() => {
+              if (themeVariant === 'frost') setThemeVariant('minimal')
+              else if (themeVariant === 'minimal') setThemeVariant('midnight')
+              else setThemeVariant('frost')
+            }}
             className="relative hidden sm:flex items-center bg-surface-container-low hover:bg-surface-container rounded-full p-1 pl-2.5 pr-2 gap-1.5 text-on-surface-variant border border-primary-container/20 cursor-pointer transition-colors"
-            title="Toggle Light / Dark Botanical Frost Theme"
+            title="Click to cycle themes: Frost -> Minimal -> Midnight"
           >
             <span className="h-2 w-2 rounded-full bg-primary-container" />
-            <span className="font-label-sub text-label-sub font-mono text-on-surface font-medium">
-              Botanical Frost
+            <span className="font-label-sub text-label-sub font-mono text-on-surface font-semibold capitalize">
+              {themeVariant} Theme
             </span>
             <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
-              {theme === 'dark' ? 'dark_mode' : 'light_mode'}
+              palette
             </span>
           </button>
 
